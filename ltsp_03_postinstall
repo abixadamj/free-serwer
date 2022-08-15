@@ -1,0 +1,45 @@
+#!/bin/bash
+#
+# dane do protokołu
+L='/root/install/20_protocol.txt'
+DT=`date`
+ROOTFS=`findmnt -n / | cut -d ',' -f  1 | cut -d ' ' -f 7|cut -d '/' -f 3`
+
+echo "Dane do protokołu instalacyjnego : $DT " > $L
+echo '-------------------------------' >> $L
+lshw -C system >> $L
+echo ' ' >> $L
+uname -a >> $L
+echo '-------------------------------' >> $L
+df -h >> $L
+echo '-------------------------------' >> $L
+cat /proc/mdstat >> $L
+echo '-------------------------------' >> $L
+cat /etc/fstab >> $L
+echo '-------------------------------' >> $L
+free -m >> $L
+echo '-------------------------------' >> $L
+smartctl -a /dev/sda >> $L
+echo '-------------------------------' >> $L
+smartctl -a /dev/${ROOTFS} >> $L
+echo '-------------------------------' >> $L
+smartctl -a /dev/sdc >> $L
+echo '-------------------------------' >> $L
+smartctl -a /dev/sdd >> $L
+echo '-------------------------------' >> $L
+ifconfig >> $L
+echo '-------------------------------' >> $L
+dmesg | grep MAC >> $L
+dmesg | grep eth >> $L
+dmesg | grep enp >> $L
+echo '-------------------------------' >> $L
+lshw -C system >> $L
+echo '---' >> $L
+lshw -C cpu >> $L
+echo '---' >> $L
+lshw -C memory >> $L
+echo '---' >> $L
+lshw -C network >> $L
+echo '---' >> $L
+lshw -C system >> $L
+echo '-------------------------------' >> $L

@@ -1,0 +1,208 @@
+#!/bin/bash
+#
+# Ubuntu Mate 22.02 LTS
+# last change: nie, 14 sie 2022, 15:08:31
+#
+cd /root/install
+P=`basename $0`
+DONE_FILE=done_${P}
+
+if [ -f ${DONE_FILE} ]
+then
+    echo "Script ${P} already ran..."
+    exit 1
+fi
+
+echo "Starting FREE-SERWER...."
+
+
+
+# adding some system apps
+apt purge apport*
+apt install --yes dnsmasq epoptes epoptes-client nfs-kernel-server smartmontools
+apt install --yes atop htop apache2 monit iftop iptux
+apt install --yes  language-pack-gnome-pl mythes-pl hunspell-pl
+apt install --yes libreoffice-help-pl libreoffice-l10n-pl 
+
+# python
+apt install --yes vim-python-jedi vim-nox python3-bs4 python3-pip idle-python3.10 python3-venv
+apt install --yes python3-freetype libfreetype-dev libfreetype6-dev
+apt install --yes python3-pygame-sdl2 python3-dev
+apt install --yes libsdl-image1.2-dev libsdl-mixer1.2-dev libsdl-ttf2.0-dev libsdl1.2-dev libsmpeg-dev
+apt install --yes libportmidi-dev ffmpeg libswscale-dev libavformat-dev libavcodec-dev libfreetype6-dev
+apt install --yes python-apt net-tools libqt5serialport5
+pip3 install wheel -U
+pip3 install jupyter -U
+pip3 install notebook==6.1.5 # https://github.com/jupyterhub/the-littlest-jupyterhub/issues/645#issuecomment-751383199
+pip3 install pysimplegui -U
+pip3 install bpytop -U
+pip3 install PyTechBrain -U
+
+echo "Type YES to install software for primary school : krita, tux... etc "
+read KYES
+
+if [ -z "${KYES}" ]
+then
+    KYES="NO"
+fi
+
+
+if [ ${KYES} == "YES" ]
+then
+    echo "install primary school apps ? (ENTER)"
+    read KK
+    # klasy 1-3 wine, Nowe era
+    apt install --yes fonts-wine ttf-mscorefonts-installer libwine libwine-development wine-stable wine32 wine64 wine64-development wine-binfmt wine-desktop-files winetricks
+    apt install --yes krita krita-data mypaint-data mypaint-data-extras mypaint pinta kolourpaint pencil2d
+    apt install --yes tuxpaint tuxpaint-data tuxpaint-plugins-default tuxpaint-stamps-default
+    apt install --yes blinken gamine kanagram khangman klettres kgeography littlewizard
+fi
+
+
+echo " "
+echo "Base software installed... (ENTER)"
+echo "==================================="
+read KK
+
+# preparing dirs...
+groupadd uczniowie
+groupadd nauczyciele
+mkdir -p /home/uczniowie
+mkdir -p /opt/free_serwer
+mkdir -p /srv/uczniowie/
+mkdir -p /srv/klasy
+mkdir -p /srv/jupyter
+mkdir -p /srv/gosc
+mkdir -p /srv/apps/windows/baltie
+mkdir -p /srv/apps/windows/pivot
+
+chgrp uczniowie /srv/uczniowie
+chgrp uczniowie /srv/klasy
+chgrp nauczyciele /srv/uczniowie
+chmod g+s,g+r,g+w /srv/uczniowie
+
+chgrp nauczyciele /srv/jupyter
+chmod g+s,g+w /srv/jupyter
+chmod g+s,g+w,o+w /srv/gosc
+
+# root PATH
+cd /root
+echo "export PATH=$PATH:/opt/free_serwer/bin" >> .bashrc
+
+# admin home dir and desktop
+echo " -------------------------------------"
+#
+tail -5 /etc/passwd
+echo -n "Podaj login admina: > "
+read ADMIN
+#
+echo "==================[ admin: ${ADMIN} - epeoptes / ENTER ]=================="
+cat /etc/passwd | grep ${ADMIN}
+echo "--[ENTER]----------------"
+read KK
+
+# RODO ;-)
+chmod o-x /home/${ADMIN}
+
+chown ${ADMIN}.${ADMIN} /srv/gosc
+
+gpasswd -a ${ADMIN} epoptes
+gpasswd -a ${ADMIN} nauczyciele
+gpasswd -a ${ADMIN} uczniowie
+
+DF="/root/install/files_tgz_done_"
+
+# extracting some archives....
+if [ ${KYES} == "YES" ]
+then
+    # /srv/apps/windows - for 1-3 class
+    cd /srv/apps/windows
+    tar xzvf /root/install/_srv-windows.tgz > "${DF}windows"
+fi
+
+cd /home/${ADMIN}/Pulpit
+tar xzvf /root/install/_srv_adm-2022.tgz > "${DF}admin_pulpit"
+chown ${ADMIN}.${ADMIN} /home/${ADMIN}/Pulpit -R
+# /usr/bin
+cd /usr/bin
+tar xzvf /root/install/_srv-usr_bin.tgz > "${DF}usr_bin"
+# etc
+cd /etc
+tar xzvf /root/install/_srv-etc-2022.tgz > "${DF}etc"
+chown root.root /etc/skel -R
+chown root.root /etc/cron.d/free_serwer
+# www
+cd /var/www/html
+tar xzvf /root/install/_srv-www.tgz > "${DF}www"
+chown www-data.www-data /var/www/html -R
+# opt
+cd /opt
+tar xzvf /root/install/_srv-JavaBlock.tgz > "${DF}java_block"
+cd /opt/free_serwer
+tar xzvf /root/install/_srv-opt_fs.tgz > "${DF}opt_fs"
+# root home
+cd /root
+tar xzvf /root/install/_srv-root.tgz > "${DF}root_home"
+
+
+# TEAMVIEWER
+chmod o+rx /opt/free_serwer/teamviewerqs -R
+chmod o+rx /opt/free_serwer/bin
+chmod o-x /opt/free_serwer/ssh
+
+sed 's/ADMIN=_admin_/ADMIN='${ADMIN}'/' -i /opt/free_serwer/bin/ustaw_uprawnienia.sh
+
+echo "ustawiam dla ${ADMIN} /opt/free_serwer..."
+chown root.root /opt/free_serwer/ -R
+chown ${ADMIN}.${ADMIN} /opt/free_serwer/teamviewerqs -R
+
+
+
+# config monit
+
+INT=`ifconfig | grep flags=4163 | cut -f1 -d:`
+ROOTFS=`findmnt -n / | cut -d ',' -f  1 | cut -d ' ' -f 7|cut -d '/' -f 3`
+
+echo "-----[sprawdź ${INT} -- ${ROOTFS}  ]------------"
+echo "---[ enter ]----"
+read KK
+
+sed 's/_IFACE_/'${INT}'/' -i /etc/monit/monitrc
+sed 's/_DISK_/'${ROOTFS}'/' -i /etc/monit/monitrc
+sed 's/_IFACE_/'${INT}'/' -i /etc/monit/conf-enabled/networking
+
+
+# visudo
+clear
+echo " "
+echo " Teraz do sudoers dodaj:  /opt/free_serwer/bin "
+echo " [enter] i jesteś w edytorze nano... : CTRL+X kończy pracę w nim"
+read KK
+visudo
+
+# getting LTSP
+wget https://ltsp.org/misc/ltsp_ubuntu_ppa.gpg -O /etc/apt/trusted.gpg.d/ltsp_ubuntu_ppa.gpg
+add-apt-repository ppa:ltsp
+apt-key adv --keyserver hkp://pool.sks-keyservers.net:80 --recv-keys A6616109451BBBF2
+dpkg-reconfigure openssh-server
+apt purge --yes --auto-remove flatpak pinguybuilder-menu-based # indicator-application mate-hud
+
+# LTSP
+apt install ltsp ltsp-binaries
+
+# some system things
+systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
+
+#
+echo "--[enter]-------------"
+read KK
+install -m 0660 -g sudo /usr/share/ltsp/common/ltsp/ltsp.conf /etc/ltsp/ltsp.conf.orig
+
+
+echo "--------------------------"
+echo "teraz reboot i ltsp_02_install"
+echo "--------------------------"
+
+touch ${DONE_FILE}
+touch ${DONE_FILE}
+exit 0
