@@ -183,12 +183,13 @@ visudo
 # getting LTSP
 wget https://ltsp.org/misc/ltsp_ubuntu_ppa.gpg -O /etc/apt/trusted.gpg.d/ltsp_ubuntu_ppa.gpg
 add-apt-repository ppa:ltsp
-apt-key adv --keyserver hkp://pool.sks-keyservers.net:80 --recv-keys A6616109451BBBF2
+echo "Teraz update [ENTER]"
+read KK
+apt update
 dpkg-reconfigure openssh-server
-apt purge --yes --auto-remove flatpak pinguybuilder-menu-based # indicator-application mate-hud
 
 # LTSP
-apt install ltsp ltsp-binaries
+apt install ltsp ltsp-binaries -y
 
 # some system things
 systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
