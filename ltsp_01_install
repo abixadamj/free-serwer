@@ -19,7 +19,6 @@ echo "Starting FREE-SERWER...."
 
 # adding some system apps
 apt purge apport*
-apt install --yes dnsmasq epoptes epoptes-client nfs-kernel-server smartmontools
 apt install --yes atop htop apache2 monit iftop iptux
 apt install --yes  language-pack-gnome-pl mythes-pl hunspell-pl
 apt install --yes libreoffice-help-pl libreoffice-l10n-pl 
@@ -180,16 +179,14 @@ echo " [enter] i jesteś w edytorze nano... : CTRL+X kończy pracę w nim"
 read KK
 visudo
 
-# getting LTSP
-wget https://ltsp.org/misc/ltsp_ubuntu_ppa.gpg -O /etc/apt/trusted.gpg.d/ltsp_ubuntu_ppa.gpg
-add-apt-repository ppa:ltsp
-echo "Teraz update [ENTER]"
-read KK
+# adding LTSP PPA
+add-apt-repository ppa:ts.sch.gr
 apt update
-dpkg-reconfigure openssh-server
-
 # LTSP
-apt install ltsp ltsp-binaries -y
+echo "Press [ENTER]..."
+read KK
+apt install --yes ltsp ltsp-binaries dnsmasq epoptes epoptes-client nfs-kernel-server smartmontools
+
 
 # some system things
 systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
