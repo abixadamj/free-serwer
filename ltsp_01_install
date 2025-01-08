@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Ubuntu Mate 22.02 LTS
-# last change: nie, 14 sie 2022, 15:08:31
+# last change: sob, 4 sty 2025, 20:50:12
 #
 cd /root/install
 P=`basename $0`
@@ -17,44 +17,71 @@ echo "Starting FREE-SERWER...."
 
 
 
-# adding some system apps
+# adding some system and other apps
 apt purge apport*
-apt install --yes atop htop apache2 monit iftop iptux
-apt install --yes  language-pack-gnome-pl mythes-pl hunspell-pl
-apt install --yes libreoffice-help-pl libreoffice-l10n-pl 
+apt install --yes atop htop apache2 monit iftop iptux epoptes dconf-editor
+apt install --yes  language-pack-gnome-pl mythes-pl hunspell-pl parcellite bashtop
+apt install --yes libreoffice-help-pl libreoffice-l10n-pl openjdk-21-jre-headless
+apt install --yes fonts-dejavu fonts-crosextra-carlito
+apt install --yes krita krita-data mypaint-data mypaint-data-extras mypaint pinta kolourpaint pencil2d
 
 # python
 apt install --yes vim-python-jedi vim-nox python3-bs4 python3-pip idle-python3.10 python3-venv
 apt install --yes python3-freetype libfreetype-dev libfreetype6-dev
-apt install --yes python3-pygame-sdl2 python3-dev
+apt install --yes python3-pygame-sdl2 python3-dev python3-pip percellite
 apt install --yes libsdl-image1.2-dev libsdl-mixer1.2-dev libsdl-ttf2.0-dev libsdl1.2-dev libsmpeg-dev
 apt install --yes libportmidi-dev ffmpeg libswscale-dev libavformat-dev libavcodec-dev libfreetype6-dev
 apt install --yes python-apt net-tools libqt5serialport5
-pip3 install wheel -U
-pip3 install jupyter -U
+pip3 install wheel -U 
+pip3 install jupyter -U 
 pip3 install notebook==6.1.5 # https://github.com/jupyterhub/the-littlest-jupyterhub/issues/645#issuecomment-751383199
-pip3 install pysimplegui -U
-pip3 install bpytop -U
-pip3 install PyTechBrain -U
+pip3 install pysimplegui -U 
 
-echo "Type YES to install software for primary school : krita, tux... etc "
+
+# OnlyOffice
+wget https://download.onlyoffice.com/install/desktop/editors/linux/onlyoffice-desktopeditors_amd64.deb
+dpkg -i onlyoffice-desktopeditors_amd64.deb
+echo "==============================="
+echo "PRIMARY school - type Y/N to install software: krita, tux... etc [default=Y]"
 read KYES
 
 if [ -z "${KYES}" ]
 then
-    KYES="NO"
+    KYES="Y"
 fi
 
 
-if [ ${KYES} == "YES" ]
+if [ ${KYES} == "Y" ]
 then
     echo "install primary school apps ? (ENTER)"
     read KK
     # klasy 1-3 wine, Nowe era
-    apt install --yes fonts-wine ttf-mscorefonts-installer libwine libwine-development wine-stable wine32 wine64 wine64-development wine-binfmt wine-desktop-files winetricks
-    apt install --yes krita krita-data mypaint-data mypaint-data-extras mypaint pinta kolourpaint pencil2d
+    apt install --yes fonts-wine ttf-mscorefonts-installer libwine libwine-development wine-stable wine32 wine64 wine64-development wine-binfmt winetricks
     apt install --yes tuxpaint tuxpaint-data tuxpaint-plugins-default tuxpaint-stamps-default
-    apt install --yes blinken gamine kanagram khangman klettres kgeography littlewizard
+    apt install --yes blinken gamine kanagram khangman klettres kgeography littlewizard pysiogame kturtle
+fi
+
+
+echo "SECONDARY school - type Y/N to install software:  etc [default=Y] "
+read SKYES
+
+if [ -z "${SKYES}" ]
+then
+    SKYES="Y"
+fi
+
+
+if [ ${SKYES} == "Y" ]
+then
+    echo "install secondary school apps ? (ENTER)"
+    read KK
+    #
+    add-apt-repository -y ppa:linuxgndu/sqlitebrowser
+    add-apt-repository ppa:x-psoud/cbnb
+    apt install -y codeblocks codeblocks-contrib
+    apt install --yes librecad librecad-data gimp gimp-plugin-registry gimp-data-extras sqlite3 sqlitebrowser
+    apt install --yes step xball vym vokoscreen-ng marble mythes-pl kgeography-data geogebra-gnome
+    apt install --yes wxmaxima maxima sagemath khangman klettres-data qgis-providers-common qgis
 fi
 
 
@@ -102,8 +129,11 @@ read KK
 
 # RODO ;-)
 chmod o-x /home/${ADMIN}
+cd /home/${ADMIN}
 
-chown ${ADMIN}.${ADMIN} /srv/gosc
+
+
+chown ${ADMIN}:${ADMIN} /srv/gosc
 
 gpasswd -a ${ADMIN} epoptes
 gpasswd -a ${ADMIN} nauczyciele
@@ -119,42 +149,29 @@ then
     tar xzvf /root/install/_srv-windows.tgz > "${DF}windows"
 fi
 
-cd /home/${ADMIN}/Pulpit
-tar xzvf /root/install/_srv_adm-2022.tgz > "${DF}admin_pulpit"
-chown ${ADMIN}.${ADMIN} /home/${ADMIN}/Pulpit -R
+# admin files
+cd /home/${ADMIN}
+tar xzvf /root/install/srv-admin.tgz > "${DF}-home-admin"
+chown ${ADMIN}:${ADMIN} /home/${ADMIN} -R
+
 # /usr/bin
 cd /usr/bin
-tar xzvf /root/install/_srv-usr_bin.tgz > "${DF}usr_bin"
+tar xzvf /root/install/srv-usrbin.tgz > "${DF}usr_bin"
+
 # etc
 cd /etc
-tar xzvf /root/install/_srv-etc-2022.tgz > "${DF}etc"
-chown root.root /etc/skel -R
-chown root.root /etc/cron.d/free_serwer
+tar xzvf /root/install/srv-etc.tgz > "${DF}etc"
 # www
 cd /var/www/html
-tar xzvf /root/install/_srv-www.tgz > "${DF}www"
-chown www-data.www-data /var/www/html -R
-# opt
+tar xzvf /root/install/srv-www.tgz > "${DF}www"
+chown www-data:www-data /var/www/html -R
+
+# opt - bzip2 inside
 cd /opt
-tar xzvf /root/install/_srv-JavaBlock.tgz > "${DF}java_block"
-cd /opt/free_serwer
-tar xzvf /root/install/_srv-opt_fs.tgz > "${DF}opt_fs"
+tar xjvf /root/install/srv-opt.tjgz > "${DF}opt_fs"
 # root home
 cd /root
-tar xzvf /root/install/_srv-root.tgz > "${DF}root_home"
-
-
-# TEAMVIEWER
-chmod o+rx /opt/free_serwer/teamviewerqs -R
-chmod o+rx /opt/free_serwer/bin
-chmod o-x /opt/free_serwer/ssh
-
-sed 's/ADMIN=_admin_/ADMIN='${ADMIN}'/' -i /opt/free_serwer/bin/ustaw_uprawnienia.sh
-
-echo "ustawiam dla ${ADMIN} /opt/free_serwer..."
-chown root.root /opt/free_serwer/ -R
-chown ${ADMIN}.${ADMIN} /opt/free_serwer/teamviewerqs -R
-
+tar xzvf /root/install/srv-root.tgz > "${DF}root_home"
 
 
 # config monit
@@ -162,7 +179,9 @@ chown ${ADMIN}.${ADMIN} /opt/free_serwer/teamviewerqs -R
 INT=`ifconfig | grep flags=4163 | cut -f1 -d:`
 ROOTFS=`findmnt -n / | cut -d ',' -f  1 | cut -d ' ' -f 7|cut -d '/' -f 3`
 
-echo "-----[sprawdź ${INT} -- ${ROOTFS}  ]------------"
+echo "-----[sprawdź eth: ${INT} -- disk: ${ROOTFS}  ]------------"
+echo " Inne ethernet na wszellki wypadek"
+ifconfig | grep -A1 mtu | grep -v lo
 echo "---[ enter ]----"
 read KK
 
@@ -180,10 +199,14 @@ read KK
 visudo
 
 # adding LTSP PPA
+echo "Teraz Repo LTSP!!!!"
+echo "----------------------------"
+
 add-apt-repository ppa:ts.sch.gr
 apt update
+
 # LTSP
-echo "Press [ENTER]..."
+echo "Press [ENTER] - main ltsp binaries..."
 read KK
 apt install --yes ltsp ltsp-binaries dnsmasq epoptes epoptes-client nfs-kernel-server smartmontools
 
@@ -201,6 +224,5 @@ echo "--------------------------"
 echo "teraz reboot i ltsp_02_install"
 echo "--------------------------"
 
-touch ${DONE_FILE}
 touch ${DONE_FILE}
 exit 0

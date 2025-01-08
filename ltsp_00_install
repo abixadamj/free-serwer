@@ -1,8 +1,9 @@
 #!/bin/bash
 #
-# Ubuntu Mate 22.02 LTS
-# last change: nie, 14 sie 2022, 15:08:31
+# Ubuntu Mate 22.04.05 LTS
+# last change: sob, 4 sty 2025, 20:35:06
 #
+
 cd /root/install
 P=`basename $0`
 DONE_FILE=done_${P}
@@ -14,13 +15,10 @@ then
 fi
 
 echo "Starting FREE-SERWER...."
-export XAN="NO"
 
-# clearing apt
 echo "cleaning APT and install main network ..."
-cat apt.sources.list > /etc/apt/sources.list
 apt update
-apt purge snapd
+apt purge snapd 
 apt autoremove
 apt install -y openssh-server net-tools curl
 
@@ -34,45 +32,14 @@ echo "Pin-Priority: 501" >> /etc/apt/preferences.d/mozillateamppa
 curl -s https://brave-browser-apt-release.s3.brave.com/brave-core.asc | sudo apt-key --keyring /etc/apt/trusted.gpg.d/brave-browser-release.gpg add -
 echo "deb [arch=amd64] https://brave-browser-apt-release.s3.brave.com stable main" >> /etc/apt/sources.list.d/brave.list
 
-# MS-Edge
-echo "deb [arch=amd64] http://packages.microsoft.com/repos/edge/ stable main" >> /etc/apt/sources.list.d/microsoft_edge.list
+# MS-Edge and Google Chrome must be installed from deb files
 
 apt update
-apt install firefox-esr brave-browser microsoft-edge-stable
-apt list --upgradable
+apt install firefox-esr brave-browser  gstreamer1.0-pipewire libxdo3 -y
 
-echo "Type YES to dist upgrade"
-read KYES
-
-if [ -z "${KYES}" ]
-then
-    KYES="NO"
-fi
-
-
-if [ ${KYES} == "YES" ]
-then
-    echo "dist upgrade ? (ENTER)"
-    read KK
-    apt dist-upgrade
-    echo "Please reboot.... (ENTER)"
-    echo "dist-upgrade done" > ${DONE_FILE}
-    read KK
-    reboot
-fi
-
-# XanModLinux
-if [ ${XAN} == "YES" ] 
-then
-
-    apt install -y wget
-    echo " installing xanmod kernel... press ENTER."
-    read KK
-    echo 'deb http://deb.xanmod.org releases main' | tee /etc/apt/sources.list.d/xanmod-kernel.list && wget -qO - https://dl.xanmod.org/gpg.key | apt-key add -
-    apt update
-    apt install linux-xanmod 
-fi
-
+#rustdesk
+wget https://github.com/rustdesk/rustdesk/releases/download/1.2.3-2/rustdesk-1.2.3-2-x86_64.deb
+dpkg -i rustdesk-1.2.3-2-x86_64.deb
 
 echo "--------------------------"
 echo "teraz reboot i ltsp_01_install"

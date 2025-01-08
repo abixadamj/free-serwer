@@ -15,7 +15,10 @@ fi
 
 echo "Starting FREE-SERWER...."
 
+apt install squashfs-tools
+
 echo "---[ teraz budujemy obraz systemu...  ]---"
+
 
 ltsp dnsmasq -d1 --dns-server="208.67.222.222 208.67.220.220"
 echo "czy działa dnsmasq? -- [enter lub ctrl+c]"
