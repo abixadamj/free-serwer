@@ -1,0 +1,10 @@
+#!/bin/bash
+#
+echo " Installing other software"
+
+# Delta Chat
+echo "Private messages - https://jurkiewicz.chat"
+wget https://download.delta.chat/desktop/v1.46.1/deltachat-desktop_1.46.1_amd64.deb
+dpkg -i deltachat-desktop_1.46.1_amd64.deb
+
+
