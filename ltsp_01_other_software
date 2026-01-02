@@ -3,8 +3,12 @@
 echo " Installing other software"
 
 # Delta Chat
-echo "Private messages - https://jurkiewicz.chat"
-wget https://download.delta.chat/desktop/v1.46.1/deltachat-desktop_1.46.1_amd64.deb
-dpkg -i deltachat-desktop_1.46.1_amd64.deb
+# echo "Private messages - https://jurkiewicz.chat"
+wget https://github.com/deltachat/deltachat-desktop/releases/download/v2.35.0/deltachat-desktop_2.35.0_amd64.deb
+dpkg -i deltachat-desktop_2.35.0_amd64.deb
 
 
+# Pinta graphic - compile
+# apt install dotnet8 build-essential autotools-dev autoconf-archive gettext intltool libadwaita-1-dev webp-pixbuf-loader
+# wget ...
+# compile ....

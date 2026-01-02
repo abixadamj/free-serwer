@@ -3,7 +3,15 @@
 #  Ubuntu Mate 22.02 LTS
 # last change: nie, 14 sie 2022, 15:08:31
 #
+#
+# Ubuntu MATE 24.04.03 LTS
+# last change: pią, 2 sty 2026, 09:39:50
+
+
+
+
 cd /root/install
+
 P=`basename $0`
 DONE_FILE=done_${P}
 
@@ -15,10 +23,10 @@ fi
 
 echo "Starting FREE-SERWER...."
 
-apt install squashfs-tools
+apt install squashfs-tools -y
 
-echo "---[ teraz budujemy obraz systemu...  ]---"
-
+echo "---[ teraz budujemy obraz systemu... (ENTER) ]---"
+read KK
 
 ltsp dnsmasq -d1 --dns-server="208.67.222.222 208.67.220.220"
 echo "czy działa dnsmasq? -- [enter lub ctrl+c]"
@@ -36,5 +44,5 @@ ltsp info
 echo "--------------------------"
 echo "teraz reboot i test działania"
 echo "--------------------------"
-
+cd /root/install
 touch ${DONE_FILE}

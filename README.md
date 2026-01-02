@@ -3,14 +3,21 @@
 ## 2025.01.01 - in year 2025 PPA LTSP still does not work with noble
 ## Nie można dodać prywatnego archiwum pakietów: „'To PPA nie obsługuje noble'”
 
+## 2026.01.01 - in year 2026 we have 24.04 LTS Working!
 
-Scripts for free serwer based on Ubuntu Mate 22.04 LTS
+Scripts for free serwer based on Ubuntu Mate 24.04 LTS
+
+https://cdimage.ubuntu.com/ubuntu-mate/releases/noble/release/ubuntu-mate-24.04.3-desktop-amd64.iso
+
+
+Old:
 
 https://cdimage.ubuntu.com/ubuntu-mate/releases/22.04/release/ubuntu-mate-22.04.5-desktop-amd64.iso
 
-Other type of downloads
-https://ubuntu-mate.org/download/amd64/jammy/
 
+More info: 
+
+https://ubuntu-mate.org/faq/downloads/
 
 Make directory `/root/install` - there copy all files.
 

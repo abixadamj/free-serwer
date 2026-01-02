@@ -3,6 +3,14 @@
 # Ubuntu Mate 22.04.05 LTS
 # last change: sob, 4 sty 2025, 20:35:06
 #
+# Ubuntu MATE 24.04.03 LTS
+# last change: pią, 2 sty 2026, 09:39:50
+
+# first, Microsoft Edit
+cd /
+wget https://jurkiewicz.tech/assets/_msedit.tgz
+tar xzvf _msedit.tgz && rm -f _msedit.tgz 
+#
 
 cd /root/install
 P=`basename $0`
@@ -17,7 +25,8 @@ fi
 echo "Starting FREE-SERWER...."
 
 echo "cleaning APT and install main network ..."
-apt update
+
+pt update
 apt purge snapd 
 apt autoremove
 apt install -y openssh-server net-tools curl
@@ -38,8 +47,12 @@ apt update
 apt install firefox-esr brave-browser  gstreamer1.0-pipewire libxdo3 -y
 
 #rustdesk
-wget https://github.com/rustdesk/rustdesk/releases/download/1.2.3-2/rustdesk-1.2.3-2-x86_64.deb
-dpkg -i rustdesk-1.2.3-2-x86_64.deb
+wget https://github.com/rustdesk/rustdesk/releases/download/1.4.4/rustdesk-1.4.4-x86_64.deb
+dpkg -i rustdesk-1.4.4-x86_64.deb
+#
+# wget https://github.com/rustdesk/rustdesk/releases/download/1.2.3-2/rustdesk-1.2.3-2-x86_64.deb
+# dpkg -i rustdesk-1.2.3-2-x86_64.deb
+
 
 echo "--------------------------"
 echo "teraz reboot i ltsp_01_install"

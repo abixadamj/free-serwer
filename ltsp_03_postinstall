@@ -1,31 +1,29 @@
 #!/bin/bash
+
+#
+# Ubuntu MATE 24.04.03 LTS
+# last change: pią, 2 sty 2026, 13:03:00
+
 #
 # dane do protokołu
 L='/root/install/20_protocol.txt'
 DT=`date`
 ROOTFS=`findmnt -n / | cut -d ',' -f  1 | cut -d ' ' -f 7|cut -d '/' -f 3`
+# additional device
+ADD_DEV='/dev/nvme0n1'
 
 echo "Dane do protokołu instalacyjnego : $DT " > $L
 echo '-------------------------------' >> $L
-lshw -C system >> $L
-echo ' ' >> $L
-uname -a >> $L
-echo '-------------------------------' >> $L
-df -h >> $L
-echo '-------------------------------' >> $L
-cat /proc/mdstat >> $L
-echo '-------------------------------' >> $L
-cat /etc/fstab >> $L
-echo '-------------------------------' >> $L
-free -m >> $L
+neofetch --stdout >> $L
+
+echo '-----[lsblk disk devics ]--------------------------' >> $L
+lsblk -l | grep disk >> $L
+echo '-----[ROOT directory device: ${ROOTFS} ]--------------------------' >> $L
+smartctl -a /dev/${ROOTFS} >> $L
 echo '-------------------------------' >> $L
 smartctl -a /dev/sda >> $L
 echo '-------------------------------' >> $L
-smartctl -a /dev/${ROOTFS} >> $L
-echo '-------------------------------' >> $L
-smartctl -a /dev/sdc >> $L
-echo '-------------------------------' >> $L
-smartctl -a /dev/sdd >> $L
+smartctl -a /dev/sdb >> $L
 echo '-------------------------------' >> $L
 ifconfig >> $L
 echo '-------------------------------' >> $L
@@ -34,12 +32,14 @@ dmesg | grep eth >> $L
 dmesg | grep enp >> $L
 echo '-------------------------------' >> $L
 lshw -C system >> $L
-echo '---' >> $L
-lshw -C cpu >> $L
-echo '---' >> $L
-lshw -C memory >> $L
-echo '---' >> $L
-lshw -C network >> $L
-echo '---' >> $L
-lshw -C system >> $L
+echo ' ' >> $L
+echo '-------------------------------' >> $L
+free -m >> $L
+uname -a >> $L
+echo '-------------------------------' >> $L
+df -h >> $L
+echo '-------------------------------' >> $L
+cat /proc/mdstat >> $L
+echo '-------------------------------' >> $L
+cat /etc/fstab >> $L
 echo '-------------------------------' >> $L

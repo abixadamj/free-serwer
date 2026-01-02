@@ -3,6 +3,10 @@
 # Ubuntu Mate 22.02 LTS
 # last change: sob, 4 sty 2025, 20:50:12
 #
+# Ubuntu MATE 24.04.03 LTS
+# last change: pią, 2 sty 2026, 09:39:50
+
+
 cd /root/install
 P=`basename $0`
 DONE_FILE=done_${P}
@@ -20,27 +24,33 @@ echo "Starting FREE-SERWER...."
 # adding some system and other apps
 apt purge apport*
 apt install --yes atop htop apache2 monit iftop iptux epoptes dconf-editor
-apt install --yes  language-pack-gnome-pl mythes-pl hunspell-pl parcellite bashtop
+apt install --yes language-pack-gnome-pl mythes-pl hunspell-pl parcellite bashtop
 apt install --yes libreoffice-help-pl libreoffice-l10n-pl openjdk-21-jre-headless
 apt install --yes fonts-dejavu fonts-crosextra-carlito
-apt install --yes krita krita-data mypaint-data mypaint-data-extras mypaint pinta kolourpaint pencil2d
+apt install --yes krita krita-data mypaint-data mypaint-data-extras mypaint kolourpaint pencil2d
 
 # python
-apt install --yes vim-python-jedi vim-nox python3-bs4 python3-pip idle-python3.10 python3-venv
+apt install --yes vim-python-jedi vim-nox python3-bs4 python3-pip python3-pip-whl idle-python3 python3-venv python-is-python3
 apt install --yes python3-freetype libfreetype-dev libfreetype6-dev
-apt install --yes python3-pygame-sdl2 python3-dev python3-pip percellite
+apt install --yes python3-pygame-sdl2 percellite
 apt install --yes libsdl-image1.2-dev libsdl-mixer1.2-dev libsdl-ttf2.0-dev libsdl1.2-dev libsmpeg-dev
 apt install --yes libportmidi-dev ffmpeg libswscale-dev libavformat-dev libavcodec-dev libfreetype6-dev
-apt install --yes python-apt net-tools libqt5serialport5
-pip3 install wheel -U 
-pip3 install jupyter -U 
-pip3 install notebook==6.1.5 # https://github.com/jupyterhub/the-littlest-jupyterhub/issues/645#issuecomment-751383199
-pip3 install pysimplegui -U 
+apt install --yes python3-apt net-tools libqt5serialport5
+
+# pip workaround for: error: externally-managed-environment
+pip3 install wheel -U --break-system-packages
+pip3 install jupyter -U --break-system-packages
+pip3 install notebook==6.1.5 --break-system-packages # https://github.com/jupyterhub/the-littlest-jupyterhub/issues/645#issuecomment-751383199
+pip3 install freesimplegui -U --break-system-packages
 
 
 # OnlyOffice
-wget https://download.onlyoffice.com/install/desktop/editors/linux/onlyoffice-desktopeditors_amd64.deb
-dpkg -i onlyoffice-desktopeditors_amd64.deb
+if [ ! -f onlyoffice.done ] 
+then
+    wget https://download.onlyoffice.com/install/desktop/editors/linux/onlyoffice-desktopeditors_amd64.deb
+    dpkg -i onlyoffice-desktopeditors_amd64.deb
+    touch onlyoffice.done
+fi
 echo "==============================="
 echo "PRIMARY school - type Y/N to install software: krita, tux... etc [default=Y]"
 read KYES
@@ -56,9 +66,14 @@ then
     echo "install primary school apps ? (ENTER)"
     read KK
     # klasy 1-3 wine, Nowe era
-    apt install --yes fonts-wine ttf-mscorefonts-installer libwine libwine-development wine-stable wine32 wine64 wine64-development wine-binfmt winetricks
-    apt install --yes tuxpaint tuxpaint-data tuxpaint-plugins-default tuxpaint-stamps-default
-    apt install --yes blinken gamine kanagram khangman klettres kgeography littlewizard pysiogame kturtle
+    apt install --yes fonts-wine ttf-mscorefonts-installerlibwine wine-stable wine64 wine-binfmt winetricks
+    apt install --yes tuxpaint tuxpaint-data tuxpaint-plugins-default tuxpaint-stamps-default krita
+    apt install --yes blinken gamine kanagram khangman klettres kgeography littlewizard kturtle
+    # eduactive by Ireneusz Imołek
+    echo 'deb http://download.opensuse.org/repositories/home:/imiolek-i/xUbuntu_24.04/ /' | tee /etc/apt/sources.list.d/home:imiolek-i.list
+    curl -fsSL https://download.opensuse.org/repositories/home:imiolek-i/xUbuntu_24.04/Release.key | gpg --dearmor | tee /etc/apt/trusted.gpg.d/home_imiolek-i.gpg > /dev/null
+    apt update
+    apt install -y eduactiv8
 fi
 
 
@@ -78,10 +93,10 @@ then
     #
     add-apt-repository -y ppa:linuxgndu/sqlitebrowser
     add-apt-repository ppa:x-psoud/cbnb
-    apt install -y codeblocks codeblocks-contrib
+    apt install --yes codeblocks codeblocks-contrib
     apt install --yes librecad librecad-data gimp gimp-plugin-registry gimp-data-extras sqlite3 sqlitebrowser
     apt install --yes step xball vym vokoscreen-ng marble mythes-pl kgeography-data geogebra-gnome
-    apt install --yes wxmaxima maxima sagemath khangman klettres-data qgis-providers-common qgis
+    apt install --yes wxmaxima maxima cantor khangman klettres-data qgis-providers-common qgis
 fi
 
 
@@ -111,9 +126,10 @@ chgrp nauczyciele /srv/jupyter
 chmod g+s,g+w /srv/jupyter
 chmod g+s,g+w,o+w /srv/gosc
 
-# root PATH
+# bin PATH and free_serwer bin
 cd /root
-echo "export PATH=$PATH:/opt/free_serwer/bin" >> .bashrc
+echo "export PATH=$PATH:~/bin:/opt/free_serwer/bin" >> .bashrc
+ln -s ~/.local/bin
 
 # admin home dir and desktop
 echo " -------------------------------------"
@@ -130,7 +146,8 @@ read KK
 # RODO ;-)
 chmod o-x /home/${ADMIN}
 cd /home/${ADMIN}
-
+# add binaries path
+echo "export PATH=$PATH:/opt/free_serwer/bin" >> .bashrc
 
 
 chown ${ADMIN}:${ADMIN} /srv/gosc
@@ -224,5 +241,6 @@ echo "--------------------------"
 echo "teraz reboot i ltsp_02_install"
 echo "--------------------------"
 
+cd /root/install
 touch ${DONE_FILE}
 exit 0
