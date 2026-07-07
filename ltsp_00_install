@@ -29,7 +29,7 @@ echo "cleaning APT and install main network ..."
 pt update
 apt purge snapd 
 apt autoremove
-apt install -y openssh-server net-tools curl
+apt install -y openssh-server net-tools curllibicu-dev
 
 # add firefox PPA
 add-apt-repository ppa:mozillateam/ppa
